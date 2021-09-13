@@ -27,39 +27,36 @@ app.get("/api/hello", function (req, res) {
 
 app.get("/api", (req, res) => {
   var now = new Date()
-  // console.log(req, "<= req");
   res.json({
     "unix": now.getTime(),
     "utc": now.toUTCString()
-  })
-})
+  });
+});
 
 
 app.get("/api/:date", (req, res) => {
 
-  let dateString = "2015-12-25";
-  let passedInValue = new Date(dateString)
+  let dateString = req.params.date;
 
-  if(parseInt(dateString) > 10000) {
+  if (parseInt(dateString) > 10000) {
     let unixTime = new Date(parseInt(dateString));
     res.json({
-            "unix": unixTime.getTime(),
-            "utc": unixTime.toUTCString()
-          })
-
+      "unix": unixTime.getTime(),
+      "utc": unixTime.toUTCString()
+    });
   }
 
-    if (passedInValue === "Invalid Date") {
-      res.json({ error : "Invalid Date" });
-    } else {
-      res.json({
-        "unix": passedInValue.getTime(),
-        "utc": passedInValue.toUTCString()
-      })
-    }
+  let passedInValue = new Date(dateString);
 
-  
-})
+  if (passedInValue == "Invalid Date" )  {
+    res.json({"error" : "Invalid Date" });
+  } else {
+    res.json({
+      "unix": passedInValue.getTime(),
+      "utc": passedInValue.toUTCString()
+    })
+  }
+});
 
 
 
