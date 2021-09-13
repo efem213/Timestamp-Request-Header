@@ -52,7 +52,10 @@ app.get("/api/:date", (req, res) => {
     if (passedInValue === "Invalid Date") {
       res.json({ error : "Invalid Date" });
     } else {
-      
+      res.json({
+        "unix": passedInValue.getTime(),
+        "utc": passedInValue.toUTCString()
+      })
     }
 
   
