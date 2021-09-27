@@ -1,10 +1,23 @@
+var database_uri = 'mongodb+srv://user1:zM7t9d1IuPwYU3PX@freecodecamp.ssyat.mongodb.net/db1?retryWrites=true&w=majority';
+
+
+
 // server.js
 // where your node app starts
 
 // init project
 var express = require('express');
+var mongo = require('mongodb');
+var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
+var shortid = require('shortid');
 var app = express();
 var port = process.env.PORT || 3000;
+
+mongoose.connect(database_uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC 
@@ -27,6 +40,34 @@ app.get("/requestHeaderParser", function (req, res) {
   res.sendFile(__dirname + '/views/requestHeaderParser.html');
 });
 
+app.get("/urlShortener", function (req, res) {
+  res.sendFile(__dirname + '/views/urlShortener.html');
+});
+
+//Build Schema and model to store saved URLs
+var ShortUrl = mongoose.model('ShortURL', new Schema({ name: String}));
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(bodyParser.json())
+
+app.post('/api/shorturl', function (req, res) {  
+ 
+  let client_requested_url = req.body.url
+  let suffix = shortid.generate();
+  console.log(suffix, " <= This will be our suffix");
+  res.json({
+    "short_url": "here we need a shortened URL",
+    "original_url": client_requested_url,
+    "suffix": suffix
+  });
+  // create user in req.body
+})
+
+
+
 
 
 // your first API endpoint... 
@@ -34,6 +75,8 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
+
+//Header Request
 app.get("/api/whoami", (req, res) => {
  //console.log(req);
   res.json({
@@ -42,6 +85,8 @@ app.get("/api/whoami", (req, res) => {
     "software": req.headers['user-agent']
   });
 });
+
+
 
 
 
@@ -54,6 +99,8 @@ app.get("/api", (req, res) => {
 });
 
 
+
+//Timestamp Project
 app.get("/api/:date", (req, res) => {
 
   let dateString = req.params.date;
