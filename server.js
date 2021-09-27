@@ -45,7 +45,11 @@ app.get("/urlShortener", function (req, res) {
 });
 
 //Build Schema and model to store saved URLs
-var ShortUrl = mongoose.model('ShortURL', new Schema({ name: String}));
+var ShortUrl = mongoose.model('ShortURL', new mongoose.Schema({ 
+  short_url: String,
+  original_url: String,
+  suffix: String
+}));
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -53,18 +57,36 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
-app.post('/api/shorturl', function (req, res) {  
+app.post('/api/shorturl', (req, res) => {  
  
   let client_requested_url = req.body.url
   let suffix = shortid.generate();
-  console.log(suffix, " <= This will be our suffix");
-  res.json({
-    "short_url": "here we need a shortened URL",
-    "original_url": client_requested_url,
-    "suffix": suffix
+  //console.log(suffix, " <= This will be our suffix");
+  let newURL = ShortUrl({
+    short_url: __dirname + "/api/shorturl/" + suffix,
+    original_url: client_requested_url,
+    suffix: suffix
+  })
+  newURL.save((err, doc) => {
+    if(err) return console.error(err);
+   // console.log("Document insterted succussfully");
+    res.json({
+      "saved": true,
+      "short_url": newURL.short_url,
+      "original_url": newURL.original_url,
+      "suffix": newURL.suffix
+    });
   });
   // create user in req.body
-})
+});
+
+app.get("/api/shorturl/:suffix", (req, res) => {
+  let userGeneratedSuffix = req.params.suffix;
+  ShortUrl.find({suffix: userGeneratedSuffix}).then((foundUrls) => {
+    let urlForRedirect = foundUrls[0];
+    res.redirect(urlForRedirect.original_url);
+  });
+});
 
 
 
