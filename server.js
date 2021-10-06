@@ -1,10 +1,9 @@
-var database_uri = 'mongodb+srv://user1:zM7t9d1IuPwYU3PX@freecodecamp.ssyat.mongodb.net/db1?retryWrites=true&w=majority';
-
-
 
 // server.js
 // where your node app starts
+const dotenv = require("dotenv");
 
+dotenv.config();
 // init project
 var express = require('express');
 var mongo = require('mongodb');
@@ -14,10 +13,7 @@ var shortid = require('shortid');
 var app = express();
 var port = process.env.PORT || 3000;
 
-mongoose.connect(database_uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
+mongoose.connect(process.env.database_uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC 
@@ -79,6 +75,11 @@ app.post('/api/shorturl', (req, res) => {
   });
   // create user in req.body
 });
+
+
+
+
+
 
 app.get("/api/shorturl/:suffix", (req, res) => {
   let userGeneratedSuffix = req.params.suffix;
